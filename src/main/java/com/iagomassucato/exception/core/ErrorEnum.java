@@ -8,40 +8,40 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorEnum {
     FIELD_INVALID(
-            "Field invalid",
+            "field invalid",
             "VAL_001",
             HttpStatus.BAD_REQUEST,
-            "One or more fields are invalid"
+            "one or more fields are invalid"
 
     ),
 
     EMAIL_INVALID(
-            "Email invalid",
+            "email invalid",
             "VAL_002",
             HttpStatus.BAD_REQUEST,
-            "Invalid email address."
+            "invalid email address."
 
     ),
 
     DATABASE_VIOLATION(
-            "Database violation",
+            "database violation",
             "DB_409",
             HttpStatus.CONFLICT,
-            "Database rule violated"
+            "database rule violated"
     ),
 
     NOT_FOUND(
-            "Not found",
+            "not found",
             "RES_001",
             HttpStatus.NOT_FOUND,
-            "Resource not found"
+            "resource not found"
     ),
 
     GENERIC_ERROR(
-            "Generic error",
+            "generic error",
             "SYS_500",
             HttpStatus.INTERNAL_SERVER_ERROR,
-            "Unexpected server error"
+            "unexpected server error"
     );
 
     private final String title;
