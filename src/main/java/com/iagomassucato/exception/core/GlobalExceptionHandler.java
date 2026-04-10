@@ -33,7 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request) {
 
-        Map<String, Object> emptyFieldErrors = new LinkedHashMap<>();
+        Map<String, Object> blankErrors = new LinkedHashMap<>();
         Map<String, Object> emailErrors = new LinkedHashMap<>();
 
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
@@ -41,30 +41,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             String field = fieldError.getField();
             String code = fieldError.getCode();
 
-            switch (Objects.requireNonNull(code)) {
+            if (code == null) continue;
 
-                case "NotBlank", "NotNull" -> emptyFieldErrors.put(field, fieldError.getDefaultMessage());
+            switch (code) {
+                case "NotBlank", "NotNull" ->
+                        blankErrors.put(field, fieldError.getDefaultMessage());
 
-                case "Email" -> {
-                    if ("email".equals(field)) {
-                        emailErrors.put("email", fieldError.getDefaultMessage());
-                    }
-                }
+                case "Email" ->
+                        emailErrors.put(field, fieldError.getDefaultMessage());
             }
         }
 
         ErrorEnum errorEnum;
         Map<String, Object> errors;
 
-        if (!emptyFieldErrors.isEmpty()) {
-            errorEnum = ErrorEnum.FIELD_INVALID;
-            errors = emptyFieldErrors;
-        } else if (!emailErrors.isEmpty()) {
-            errorEnum = ErrorEnum.EMAIL_INVALID;
+        if (!emailErrors.isEmpty()) {
+            errorEnum = ErrorEnum.INVALID_EMAIL;
             errors = emailErrors;
         } else {
-            errorEnum = ErrorEnum.FIELD_INVALID;
-            errors = emptyFieldErrors;
+            errorEnum = ErrorEnum.INVALID_FIELD;
+            errors = blankErrors;
         }
 
         String uri = ((ServletWebRequest) request)
@@ -86,11 +82,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return exceptionResponseFactory
                 .createProblemDetail(
-                        ex.getErrorEnum(),
+                        ex.getErrorType(),
                         ex.getErrors(),
                         httpServletRequest.getRequestURI());
-
-
 
 
     }
@@ -100,7 +94,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             DataIntegrityViolationException ex,
             HttpServletRequest httpServletRequest) {
 
-        ErrorEnum errorEnum = ErrorEnum.DATABASE_VIOLATION;
+        ErrorEnum errorEnum = ErrorEnum.DATA_INTEGRITY_VIOLATION;
 
         return exceptionResponseFactory
                 .createProblemDetail(
@@ -110,8 +104,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleGenericException            (Exception ex,
-             HttpServletRequest httpServletRequest) {
+    public ProblemDetail handleGenericException(
+            Exception ex,
+            HttpServletRequest httpServletRequest) {
 
         log.error("Exception raised => {}", ex.getClass().getSimpleName());
 

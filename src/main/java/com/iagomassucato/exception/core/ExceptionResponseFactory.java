@@ -10,18 +10,18 @@ import java.util.Map;
 public class ExceptionResponseFactory {
 
     public ProblemDetail createProblemDetail(
-            ErrorEnum errorEnum,
+            ErrorType errorType,
             Map<String, Object> errors,
             String uri) {
 
-        ProblemDetail problemDetail = ProblemDetail.forStatus(errorEnum.getStatus());
+        ProblemDetail problemDetail = ProblemDetail.forStatus(errorType.getStatus());
 
         problemDetail.setType(
                 URI.create(("about:blank"))
         );
-        problemDetail.setTitle(errorEnum.getTitle());
-        problemDetail.setDetail(errorEnum.getDetails());
-        problemDetail.setProperty("errorCode", errorEnum.getErrorCode());
+        problemDetail.setTitle(errorType.getTitle());
+        problemDetail.setDetail(errorType.getDetails());
+        problemDetail.setProperty("errorCode", errorType.getErrorCode());
         if (errors != null && !errors.isEmpty()) {
             problemDetail.setProperty("errors", errors);
         }

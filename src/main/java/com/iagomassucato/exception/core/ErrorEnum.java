@@ -6,28 +6,28 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorEnum {
-    FIELD_INVALID(
-            "field invalid",
+public enum ErrorEnum implements ErrorType{
+    INVALID_FIELD(
+            "invalid field",
             "VAL_001",
             HttpStatus.BAD_REQUEST,
             "one or more fields are invalid"
 
     ),
 
-    EMAIL_INVALID(
-            "email invalid",
+    INVALID_EMAIL(
+            "invalid email",
             "VAL_002",
             HttpStatus.BAD_REQUEST,
-            "invalid email address."
+            "invalid email address"
 
     ),
 
-    DATABASE_VIOLATION(
-            "database violation",
+    DATA_INTEGRITY_VIOLATION(
+            "constraint violation",
             "DB_409",
             HttpStatus.CONFLICT,
-            "database rule violated"
+            "a database constraint was violated"
     ),
 
     NOT_FOUND(
